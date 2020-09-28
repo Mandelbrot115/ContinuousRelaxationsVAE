@@ -143,3 +143,20 @@ for epoch in range(epochs):
   print(epoch)
   #Training complete. We can generate new, random images by sampling from a Bernoulli distributions
   #with dimension "latent_var_dim", and passing this sample through the decoder network.
+#Here is an example, to create a 5x5 grid of new images:
+
+n=5
+x_limit = np.linspace(-2,2,n)
+y_limit = np.linspace(-2,2,n)
+displayImage = np.empty((28*n, 28*n))
+for i,zi in enumerate(x_limit):
+  for j,pi in enumerate(y_limit):
+    z = Bernoulli(torch.tensor([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])).sample().cuda()
+    dbern = vae_decoder(z)
+    newx = dbern.reshape(28, 28).detach()
+    newx = newx.cpu()
+    displayImage[(n-i-1)*28:(n-i)*28, j*28:(j+1)*28] = newx
+plt.figure(figsize=(8,10))
+X, Y = np.meshgrid(x_limit, y_limit)
+plt.imshow(displayImage, origin = 'upper', cmap = 'gray')
+plt.show()
